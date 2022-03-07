@@ -1,4 +1,3 @@
-
 let panier = JSON.parse(localStorage.getItem('panier'));  
 
 let html = "";
@@ -7,15 +6,14 @@ let section = document.getElementById('cart__items');
 // Création des variables du produit kanap
 let kanap = new Object();
 // Variable liée au event 
-let quantity;
-let colors;
-let kanapQuantite = document.getElementsByClassName("itemQuantity");
+
+let canapQuantite = document.getElementsByClassName("itemQuantity");
 
 // variable pour la fonction prix
 let compteurPrix = 0;
 let prixTotal = 0;  
 
-var compteur = 0;
+let compteur = 0;
 
 
 const promises = panier.map(i => {
@@ -68,10 +66,8 @@ function displayCanap(kanap) {
 
 // Panier vide retour Accueil
 function backPageHome() {
-  if (panier == null) {
     alert('Le panier est vide ! retour accueil !');
     location.href = 'index.html';
-  } 
 }
 
 // Changement quantité KANAP par utilisateur en direct sur le panier
@@ -104,23 +100,22 @@ function deleteCanap() {
       event.preventDefault();
       panier.splice(i, 1);     
       localStorage.setItem('panier',JSON.stringify(panier));
-      alert("Suppression de votre Kanap !")
-      location.reload();
-      if (localStorage.getItem("panier.value") == null) {
-        alert(`Remplissez votre panier ! retour à l'accueil ;)`);
-        document.location.href = `index.html`;    
-        localStorage.clear();
-      }
+      !panier.length ? backPageHome() : displayAlert();
     })
   } 
-};
+}
+
+function displayAlert() {
+  alert("Suppression de votre Kanap !");
+  location.reload();
+}
 
 //Total des articles 
 function totalQuantite() {    
   let kanapTotal = 0;  
 
-  for(let k = 0; k < kanapQuantite.length; k++) {
-    kanapTotal += kanapQuantite[k].valueAsNumber;
+  for(let k = 0; k < canapQuantite.length; k++) {
+    kanapTotal += canapQuantite[k].valueAsNumber;
   }  
   let kanapTotalQuantite = document.getElementById("totalQuantity");
   kanapTotalQuantite.innerHTML = kanapTotal; 
@@ -129,9 +124,104 @@ function totalQuantite() {
 //Total des prix
 function totalPrix(kanap) {
   
-  prixTotal += kanapQuantite[compteurPrix].valueAsNumber * kanap.price;
+  prixTotal += canapQuantite[compteurPrix].valueAsNumber * kanap.price;
 
   let prixTotalKanap = document.getElementById("totalPrice");
   prixTotalKanap.innerHTML = prixTotal;
   compteurPrix++;     
 }
+
+//Check de la saisie avec les expressions régulières REGEX
+const formulaire = document.querySelector('.cart__order__form');
+let regex = /^[-'a-zA-ZÀ-ÖØ-öø-ÿ\s]{3,}$/;
+let regexLocal= /^[-'a-zA-Z0-9À-ÖØ-öø-ÿ\s]{3,}$/;
+let regexEmail = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
+let prenomValide = false;
+let nomValide = false;
+let adresseValide = false;
+let villeValide = false;
+let emailValide = false;
+
+formulaire.firstName.addEventListener('input', function(){
+    this.nextElementSibling.innerHTML = regex.test(this.value) ? "" : "Au moins 3 caractères !";
+    prenomValide = regex.test(this.value);
+});
+
+formulaire.lastName.addEventListener('input', function() {
+    this.nextElementSibling.innerHTML = regex.test(this.value) ? "" : "Au moins 3 caractères !";
+    nomValide = regex.test(this.value);
+});
+
+formulaire.address.addEventListener('input', function() {
+    this.nextElementSibling.innerHTML = regexLocal.test(this.value) ? "" : "Adresse non valide !";
+    adresseValide = regexLocal.test(this.value);
+});
+
+formulaire.city.addEventListener('input', function(){
+    this.nextElementSibling.innerHTML = regexLocal.test(this.value) ? "" : "Ville non valide !";
+    villeValide = regexLocal.test(this.value);
+});
+
+formulaire.email.addEventListener('input', function() {
+    this.nextElementSibling.innerHTML = regexEmail.test(this.value) ? "" : "Email non valide !";
+    emailValide = regexEmail.test(this.value);
+});
+
+// Fonction pour vérifier que le remplissage du formulaire est conforme
+function verifForm() {
+    if (
+        prenomValide &&
+        nomValide &&
+        adresseValide &&
+        villeValide &&
+        emailValide
+    ) {
+        return true;
+    } else {
+        alert('Le formulaire contient des erreurs.');
+        return false;
+    }
+}
+
+// Objet defini pour les données de commande
+let orderDetail = {
+    contact: {
+        firstName: firstName,
+        lastName: lastName,
+        address: address,
+        city: city,
+        email: email,
+    },
+    products: []
+};
+
+//Commander!
+const commander = document.getElementById('order');
+
+commander.addEventListener("click", (event) => {
+                event.preventDefault();
+                if (verifForm()) {
+                        const post = {
+                            method: 'POST',
+                            headers: {
+                                'content-Type': 'application/json'},
+                            body: JSON.stringify(orderDetail),
+                            };
+                        fetch("http://localhost:3000/api/products/order", post)
+                            .then((response) => response.json())
+                            .then(data => {
+                                console.log(data);
+                                // ok orderid bien récupéré !
+                                localStorage.setItem("orderId", data.orderId);
+                                document.location.href = `confirmation.html`;
+                            });
+                } else {
+                    alert("Veuillez corriger celui-ci");
+                }
+});
+
+
+
+
+
+
