@@ -6,7 +6,7 @@ console.log(id);                                                    //récupéra
 
 let Canap = new Object();
 
-
+//Récupération des éléments des produits dans l'API
 fetch(`http://localhost:3000/api/products/${id}`)                   //récupération des éléments descriptif d'un canapé
     .then(res => res.json())
     .then(k => {
@@ -27,6 +27,7 @@ fetch(`http://localhost:3000/api/products/${id}`)                   //récupéra
       }
     );
     
+    //Choix des couleurs, quantité des articles
     document.getElementById ("colors").addEventListener(
         "change", (event) =>
         colors = event.target.value)
@@ -36,6 +37,7 @@ fetch(`http://localhost:3000/api/products/${id}`)                   //récupéra
         quantity = parseInt(event.target.value);
         })
 
+    //Click quantité
     document.getElementById ("addToCart").addEventListener(
         "click", (event) => {
         event.preventDefault();
@@ -52,7 +54,7 @@ fetch(`http://localhost:3000/api/products/${id}`)                   //récupéra
 
         }
     )
-
+    //En cas de panier vide
     function getPanier () {
         let panier = localStorage.getItem("panier");
          return  panier < 1 ? [] : JSON.parse(panier);
@@ -68,17 +70,18 @@ fetch(`http://localhost:3000/api/products/${id}`)                   //récupéra
         localStorage.setItem('panier', JSON.stringify(p));
     } 
 
+    //Ajout d'un produit
     function addPanier (produit) {
         let panier = getPanier();
         let check = false;
         panier.map(item => {
             if(item.id == produit.id && item.colors == produit.colors) {
-                // Si il y a un kanap (id + couleur) identique alors on incrémente le localstorage
+                // Si canap identique, incrémentation
                 check = true;
                 item.quantity += parseInt(produit.quantity);
             }  
         });
-        // Si il n'y a pas de kanap (id + couleur) identique alors on ajoute un clé 
+        // Ajout d'une clé 
         if (check == false) {
             panier.push(produit);  
         }
