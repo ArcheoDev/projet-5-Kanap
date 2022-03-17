@@ -97,13 +97,14 @@ function updateQuantity() {
       };
       panier[i] = newPanier;                                          //résultat : panier mis à jour [i] panier qu'on a récupéré après l'évenement
       localStorage.setItem('panier',JSON.stringify(panier));          // setItem, pour modifier le localStorage
+      location.reload();                                              // afin de mettre à jour l'affichage de la quantité    
     });
   }
 }
 
 //quantité total 
 function totalQuantite() {              //calcule la quantité totale des articles
-  let kanapTotal = 0;                   //intensié à 0 / pas de produit = 0 
+  let kanapTotal = 0;                   //instancié à 0 / pas de produit = 0 
 
   for(let k = 0; k < canapQuantite.length; k++) {     //boucle for / pour récuperer le nombre de kanap
     kanapTotal += canapQuantite[k].valueAsNumber;     // on incrémente chaque produit ajouté
@@ -122,6 +123,7 @@ function totalPrix(kanap) {           //calcule le prix total des articles à pa
   compteurPrix++;                                                 //promesse : il va ajouter chaque produit selectionné
 }
 
+
 //Formulaire
 const formulaire = document.querySelector('.cart__order__form');  //on a récupérer la selection .cart.... pour le formulaire
 let regex = /^[-'a-zA-ZÀ-ÖØ-öø-ÿ\s]{2,}$/;                        //test pour vérifier s'il y a au moins 2 caractéres dans un mot
@@ -132,6 +134,8 @@ let nomValide = false;
 let adresseValide = false;
 let villeValide = false;
 let emailValide = false;
+
+//ça marche, mais c'est mieux d'avoir une fonction pour chaque fonctionnalité indépendante
 
 //Contrôler le formulaire
 formulaire.firstName.addEventListener('input', function(){            //evenement type input avec id firstName

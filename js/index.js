@@ -21,4 +21,3 @@ fetch(URL)                                                                      
         section.insertAdjacentHTML("beforeend", html);}))                       // incère les noeuds dans le DOM/ insertAdjacentHTML : Alternative à innerHTML, plus rapide et directe / beforeend : position, chaine de caractère juste à l'intérieur de l'élément, après son premier enfant
     })                                                                          //insertion de l'HTML dans la section  /  une boucle, il va créer autant d'HTML qu'il y a de canapé
     .catch(err => console.log('Une erreur est survenue : ' + err))              //Si erreur, l'API ne fonctionne plus, console log alert
-    ;

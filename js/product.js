@@ -2,31 +2,44 @@
 
 const param = new URLSearchParams(document.location.search);        //je demande au DOM où on se trouve
 let id = param.get("id");                                           //je récupére le paramètre ID de l'url
-console.log(id);                                                    //récupération de l'id pour chaque canapé
+
 
 let Canap = new Object();
 
+
+
 //Récupération des éléments des produits dans l'API
-fetch(`http://localhost:3000/api/products/${id}`)                   //récupération des éléments descriptif d'un canapé
-    .then(res => res.json())
-    .then(k => {
-        console.log (k);
-        document.querySelector (".item__img").innerHTML=
-        `<img src="${k.imageUrl}" alt="${k.altTxt}">`;
-        document.getElementById ("title").innerHTML=
-        `<h1 id="title">${k.name}</h1>`
-        document.getElementById ("price").innerHTML=
-        `<span id="price">${k.price}</span>`
-        document.getElementById ("description").innerHTML=
-        `<p id="description">${k.description}</p>`
-        let colors=k.colors;
+
+//pour chaque fonctionalité, il faut une fonction et ensuite on appelle la fonction, car on peut l'appeler ailleurs=> plus pratique 
+
+const getProduct = async (id) => {
+    const result = await fetch(`http://localhost:3000/api/products/${id}`);
+    const product = await result.json();
+    const itemImageElement = document.createElement("img");
+        itemImageElement.setAttribute("src", product.imageUrl);
+        const itemTitleElement = document.createElement("h1");
+        itemTitleElement.textContent = product.name;
+        const itemPriceElement = document.createElement("span");
+        itemPriceElement.textContent = product.price;
+        const itemDescriptionElement = document.createElement("p");
+        itemDescriptionElement.textContent = product.description;
+        document.querySelector (".item__img").appendChild(itemImageElement);
+        document.getElementById ("title").appendChild(itemTitleElement);
+        document.getElementById ("price").appendChild(itemPriceElement);
+        document.getElementById ("description").appendChild(itemDescriptionElement);
+        let colors=product.colors;
         colors.map((c => {
-            c = document.getElementById ("colors").innerHTML+=
-            `<option value="${c}">${c}</option>`
+            const optionElement = document.createElement("option");
+                     optionElement.value = c;
+                     optionElement.text = c;
+            c = document.getElementById ("colors").appendChild(optionElement);
         }))
-      }
-    );
-    
+
+  };
+
+  getProduct(id);
+
+
     //Choix des couleurs, quantité des articles
     document.getElementById ("colors").addEventListener(
         "change", (event) =>
@@ -48,8 +61,9 @@ fetch(`http://localhost:3000/api/products/${id}`)                   //récupéra
             Canap.quantity = quantity;
             Canap.colors = colors;
             addPanier(Canap);
+            alert("Le canapé a été ajouté dans le panier");
             } else {
-                alert(" il n'y a rien dans le panier");
+                alert("Le panier est vide");
             }
 
         }
@@ -58,12 +72,6 @@ fetch(`http://localhost:3000/api/products/${id}`)                   //récupéra
     function getPanier () {
         let panier = localStorage.getItem("panier");
          return  panier < 1 ? [] : JSON.parse(panier);
-            // if (panier < 1) {
-            //    return [];         
-            // }
-            // else {
-            //     return JSON.parse(panier)
-            // }
     }
 
       function setPanier (p) {
