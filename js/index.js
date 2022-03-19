@@ -1,16 +1,58 @@
 //Insérer les produits de l'API
 
-//Dans index.html, l. 117, le code source du script a été changé "/js/index.js"
-const URL = 'http://localhost:3000/api/products';                               //constante pour l'URL de l'API car lien unique   
-let section = document.getElementById('items');                                 //permet de récupérer l'ID dans l'HTML
-let html = "";                                                                  //déclaration de la variable html
 
-fetch(URL)                                                                      //je récupére les éléments et j'exécute des requêtes HTTP
-    .then(res => res.json())                                                    //je récupére le résultat de la requête au format json
-    .then(function(kanaps) {       
-        console.log(kanaps);                                                    //récupération des éléments dans un tableau, 8 lignes car 8 canapés                                        
-        kanaps.map((kanap => {                                                  //j'exécute une fonction sur chaque élément du tableau
-            html =                                                              //boucle, je reprends les éléments de l'HTML en commentaire et j'ajoute les différents types de données issues du pdf "spécifications fonctionnelles" 
+// On a un lien API qu'on a mis dans une constante URL. Ce lien nous donne les données du produit
+// Le document.getElementById va récuperer les éléments avec un ID. On l'a mis dans une variable qui s'appelle let section
+// Déclare la variable de html, de type string ("")
+
+const URL = 'http://localhost:3000/api/products';
+let section = document.getElementById('items');
+let html = "";
+
+// On utilise Fetch, qui fait appel à l'URL pour récupérer les ressources et pour manipuler les requêtes et les réponses 
+// Les résultats de la requête sont récupérés en format json
+// On récupére les éléments dans un tableau, puis on exécute une fonction sur chaque élément du tableau, au moyen d'une boucle (map)
+// La variable HTML de type string, on a fait des concatations et les backtic ${}, ce qui permet de travailler sur chaque variable de produit 
+// Les éléments de l'HTML en commentaire ont été repris, et on a ajouté les différents types de données issues du pdf "spécifications fonctionnelles"  
+// L'inserAdjacentHTML a été utilisé pour incérer les données de l'HTML dans le DOM. Ceci est un alternative à innerHTML, car il est plus rapide et direct
+// Grace à la boucle, il y aura la création d'autant d'HTML qu'il y a de canapé
+// Si erreur, l'API ne fonctionne plus et un message d'alerte apparait
+
+const getProductList = async () => {
+    const result = await fetch(URL);
+    const productList = await result.json();
+    for (let productItem of productList) {
+        const itemElement = document.createElement("a");
+        const itemImageElement = document.createElement("img");
+        const itemTitleElement = document.createElement("h3");
+        const itemTextElement = document.createElement("p");
+        const itemArticle = document.createElement("article");
+    
+    //    itemElement.setAttribute("class", "item-product");
+    
+        itemImageElement.setAttribute("src", productItem.imageUrl);
+        itemTitleElement.textContent = productItem.name;
+        itemTextElement.textContent = productItem.description;
+        itemElement.href = `./product.html?id=${productItem._id}`;
+    
+        itemElement.appendChild(itemArticle);
+        itemArticle.appendChild(itemImageElement);
+        itemArticle.appendChild(itemTitleElement);
+        itemArticle.appendChild(itemTextElement);
+        
+    
+        section.appendChild(itemElement);
+      }
+  };
+
+  getProductList();
+
+/*fetch(URL)
+    .then(res => res.json())
+    .then(function(kanaps) {
+        // console.log(kanaps);
+        kanaps.map((kanap => {
+            html =
             `<a href="./product.html?id=${kanap._id}">                          
                 <article>                                 
                     <img src="${kanap.imageUrl}" alt="${kanap.altTxt}">     
@@ -18,6 +60,6 @@ fetch(URL)                                                                      
                     <p class="productDescription">${kanap.description}</p>
                 </article>
             </a>`;
-        section.insertAdjacentHTML("beforeend", html);}))                       // incère les noeuds dans le DOM/ insertAdjacentHTML : Alternative à innerHTML, plus rapide et directe / beforeend : position, chaine de caractère juste à l'intérieur de l'élément, après son premier enfant
-    })                                                                          //insertion de l'HTML dans la section  /  une boucle, il va créer autant d'HTML qu'il y a de canapé
-    .catch(err => console.log('Une erreur est survenue : ' + err))              //Si erreur, l'API ne fonctionne plus, console log alert
+        section.insertAdjacentHTML("beforeend", html);}))
+    })
+    .catch(err => console.log('Une erreur est survenue : ' + err)) */
