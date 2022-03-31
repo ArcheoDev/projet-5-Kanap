@@ -21,10 +21,10 @@ const getProductList = async () => {
         itemArticle.appendChild(itemImageElement);
         itemArticle.appendChild(itemTitleElement);
         itemArticle.appendChild(itemTextElement);
-        
     
         section.appendChild(itemElement);
       }
   };
 
   getProductList();
+
